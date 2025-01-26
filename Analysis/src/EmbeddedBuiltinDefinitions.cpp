@@ -1,4 +1,8 @@
 // This file is part of the Luau programming language and is licensed under MIT License; see LICENSE.txt for details
+#include <fstream>
+#include <iostream>
+#include <sstream>
+
 #include "Luau/BuiltinDefinitions.h"
 
 LUAU_FASTFLAGVARIABLE(LuauVectorDefinitionsExtra)
@@ -9,6 +13,11 @@ LUAU_FASTFLAG(LuauVector2Constructor)
 namespace Luau
 {
 
+<<<<<<< Updated upstream
+=======
+#pragma region Luau Code
+// TODO: there has to be a better way, like splitting up per library
+>>>>>>> Stashed changes
 static const std::string kBuiltinDefinitionLuaSrcChecked_DEPRECATED = R"BUILTIN_SRC(
 
 declare bit32: {
@@ -599,6 +608,7 @@ declare vector: {
 }
 
 )BUILTIN_SRC";
+#pragma endregion Luau Code
 
 std::string getBuiltinDefinitionSource()
 {

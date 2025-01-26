@@ -12,7 +12,7 @@
 
 LUAU_FASTINTVARIABLE(LuauRecursionLimit, 1000)
 LUAU_FASTINTVARIABLE(LuauTypeLengthLimit, 1000)
-LUAU_FASTINTVARIABLE(LuauParseErrorLimit, 100)
+LUAU_FASTINTVARIABLE(LuauParseErrorLimit, 1000)
 
 // Warning: If you are introducing new syntax, ensure that it is behind a separate
 // flag so that we don't break production games by reverting syntax changes.

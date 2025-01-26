@@ -27,6 +27,7 @@ LUAU_FASTINT(LuauTypeInferRecursionLimit)
 LUAU_FASTFLAGVARIABLE(LuauAutocompleteRefactorsForIncrementalAutocomplete)
 LUAU_FASTFLAGVARIABLE(LuauAutocompleteUseLimits)
 
+// Define starting statements
 static const std::unordered_set<std::string> kStatementStartingKeywords =
     {"while", "if", "local", "repeat", "function", "do", "for", "return", "break", "continue", "type", "export"};
 
@@ -55,6 +56,7 @@ static bool alreadyHasParens(const std::vector<AstNode*>& nodes)
     return false;
 }
 
+// Determine where to place the cursor. If it has args: put it inside. If it doesnt: put it outside.
 static ParenthesesRecommendation getParenRecommendationForFunc(const FunctionType* func, const std::vector<AstNode*>& nodes)
 {
     if (alreadyHasParens(nodes))
@@ -73,6 +75,7 @@ static ParenthesesRecommendation getParenRecommendationForFunc(const FunctionTyp
     return noArgFunction ? ParenthesesRecommendation::CursorAfter : ParenthesesRecommendation::CursorInside;
 }
 
+// Check if one of the functions in the Intersect needs the cursor inside
 static ParenthesesRecommendation getParenRecommendationForIntersect(const IntersectionType* intersect, const std::vector<AstNode*>& nodes)
 {
     ParenthesesRecommendation rec = ParenthesesRecommendation::None;
@@ -90,6 +93,7 @@ static ParenthesesRecommendation getParenRecommendationForIntersect(const Inters
     return rec;
 }
 
+// Unite getParenRecommendationForIntersect and getParemRecommendationForFunc
 static ParenthesesRecommendation getParenRecommendation(TypeId id, const std::vector<AstNode*>& nodes, TypeCorrectKind typeCorrect)
 {
     // If element is already type-correct, even a function should be inserted without parenthesis
@@ -97,17 +101,18 @@ static ParenthesesRecommendation getParenRecommendation(TypeId id, const std::ve
         return ParenthesesRecommendation::None;
 
     id = Luau::follow(id);
-    if (auto func = get<FunctionType>(id))
+    if (auto func = get<FunctionType>(id)) // check if its a function
     {
         return getParenRecommendationForFunc(func, nodes);
     }
-    else if (auto intersect = get<IntersectionType>(id))
+    else if (auto intersect = get<IntersectionType>(id)) // check if its an intersection
     {
         return getParenRecommendationForIntersect(intersect, nodes);
     }
     return ParenthesesRecommendation::None;
 }
 
+// Get the expected type of a parameter in a function (when calling it)
 static std::optional<TypeId> findExpectedTypeAt(const Module& module, AstNode* node, Position position)
 {
     auto expr = node->asExpr();
@@ -147,6 +152,7 @@ static std::optional<TypeId> findExpectedTypeAt(const Module& module, AstNode* n
     return *it;
 }
 
+// Check if the type "subTy" is equal or descendant of superType.
 static bool checkTypeMatch(TypeId subTy, TypeId superTy, NotNull<Scope> scope, TypeArena* typeArena, NotNull<BuiltinTypes> builtinTypes)
 {
     InternalErrorReporter iceReporter;
@@ -188,6 +194,9 @@ static bool checkTypeMatch(TypeId subTy, TypeId superTy, NotNull<Scope> scope, T
     }
 }
 
+/*
+ * Check if function/intersection returns type "ty"
+ */
 static TypeCorrectKind checkTypeCorrectKind(
     const Module& module,
     TypeArena* typeArena,
@@ -241,9 +250,9 @@ static TypeCorrectKind checkTypeCorrectKind(
 
 enum class PropIndexType
 {
-    Point,
-    Colon,
-    Key,
+    Point, // .
+    Colon, // :
+    Key, // [""]
 };
 
 static void autocompleteProps(
@@ -266,6 +275,7 @@ static void autocompleteProps(
         return;
     seen.insert(ty);
 
+    // Check if func is wrongly indexed
     auto isWrongIndexer = [typeArena, builtinTypes, &module, rootTy, indexType](Luau::TypeId type)
     {
         if (indexType == PropIndexType::Key)

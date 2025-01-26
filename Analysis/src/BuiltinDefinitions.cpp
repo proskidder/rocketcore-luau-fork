@@ -21,6 +21,7 @@
 #include "Luau/Subtyping.h"
 
 #include <algorithm>
+#include <iostream>
 
 /** FIXME: Many of these type definitions are not quite completely accurate.
  *

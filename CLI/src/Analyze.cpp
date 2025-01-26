@@ -358,7 +358,7 @@ private:
     std::queue<std::function<void()>> tasks;
 };
 
-int main(int argc, char** argv)
+int main2(int argc, char** argv)
 {
     Luau::assertHandler() = assertionHandler;
 
